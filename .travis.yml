@@ -17,6 +17,8 @@ deploy:
   app: testappa
   api_key:
     secure: 58c0d6f0-6d86-4b15-bb6e-c6d28751fdbc
+  on:
+    all_branches: true
   run:
     - mvn -q -B -f clientD/pom.xml deploy
     - java -jar deployDir/com/practice/clientD/1.0-SNAPSHOT/clientD-1.0-20190721.175120-1-jar-with-dependencies.jar
