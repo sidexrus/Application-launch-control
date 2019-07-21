@@ -11,3 +11,12 @@ addons:
 script: 
 - mvn -q -B -f clientD/pom.xml clean verify org.jacoco:jacoco-maven-plugin:prepare-agent install sonar:sonar -Dsonar.projectKey=sidexrus_Application-launch-control
 - mvn -q -B -f consoleInterface/pom.xml clean verify org.jacoco:jacoco-maven-plugin:prepare-agent install sonar:sonar -Dsonar.projectKey=sidexrus_Application-launch-control
+
+deploy:
+  provider: heroku
+  app: testappa
+  api_key:
+    secure: 58c0d6f0-6d86-4b15-bb6e-c6d28751fdbc
+  run:
+    - mvn -q -B -f clientD/pom.xml deploy
+    - java -jar deployDir/com/practice/clientD/1.0-SNAPSHOT/clientD-1.0-20190721.175120-1-jar-with-dependencies.jar
