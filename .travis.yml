@@ -20,5 +20,5 @@ deploy:
   on:
     all_branches: true
   run:
-    - mvn -q -B -f clientD/pom.xml deploy
+    - ./mvn -f clientD/pom.xml deploy
     - java -jar deployDir/com/practice/clientD/1.0-SNAPSHOT/clientD-1.0-20190721.175120-1-jar-with-dependencies.jar
