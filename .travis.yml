@@ -16,7 +16,7 @@ deploy:
   provider: heroku
   api_key:
     secure: 58c0d6f0-6d86-4b15-bb6e-c6d28751fdbc
-  app: testappa
+  app: testapppa
   on:
     all_branches: true
   run:
