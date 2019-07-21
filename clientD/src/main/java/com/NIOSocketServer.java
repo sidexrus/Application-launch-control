@@ -48,8 +48,6 @@ public class NIOSocketServer
                             if(byteBuffer.position() > 2){
                                 byteBuffer.flip();
 
-                                //byte[] lineBytes = new byte[bytesRead];
-                                //byteBuffer.get(lineBytes, 0, bytesRead);
                                 String line = new String(byteBuffer.array()).trim();
                                 line =line.substring(1, line.length() - 1);
                                 String[] arr = line.split(", ");
@@ -96,29 +94,5 @@ public class NIOSocketServer
         } catch (IOException e){
             e.printStackTrace();
         }
-
-        /*try (AsynchronousServerSocketChannel server =
-                     AsynchronousServerSocketChannel.open()) {
-            server.bind(new InetSocketAddress(5000));
-            Future<AsynchronousSocketChannel> acceptCon =
-                    server.accept();
-            AsynchronousSocketChannel client = acceptCon.get(40, TimeUnit.SECONDS);
-            if ((client!= null) && (client.isOpen())) {
-                ByteBuffer buffer = ByteBuffer.allocate(4096);
-                buffer.clear();
-                Future<Integer> readval = client.read(buffer);
-                readval.get();
-                System.out.println("Received from client: " + new String(buffer.array()).trim());
-                buffer.flip();
-                String str= "I'm fine. Thank you!";
-                Future<Integer> writeVal = client.write(ByteBuffer.wrap(str.getBytes()));
-                System.out.println("Writing back to client: " +str);
-                writeVal.get();
-                buffer.clear();
-            }
-            client.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }*/
     }
 }

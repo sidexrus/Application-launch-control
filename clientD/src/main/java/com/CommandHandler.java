@@ -4,7 +4,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.*;
-import java.nio.CharBuffer;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -39,6 +39,8 @@ public class CommandHandler
             enableSequence(packet);
         } else if(packet.commandText.equals("disableSeq")){
             disableSequence(packet);
+        } else if(packet.commandText.equals("Hi")){
+            packet.attributes = Collections.singletonList("Hi");
         }
 
     }
@@ -53,8 +55,8 @@ public class CommandHandler
             BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(
                     proc.getOutputStream()));
 
-            for(int i = 0; i < listApp.size(); ++i) {
-                String str = String.format("deployment disable %s\n", listApp.get(i));
+            for (String s : listApp) {
+                String str = String.format("deployment disable %s\n", s);
                 writer.write(str);
             }
             writer.flush();
@@ -78,7 +80,7 @@ public class CommandHandler
             in.read(data);
             in.close();
 
-            String configContent = new String(data, "UTF-8");
+            String configContent = new String(data, StandardCharsets.UTF_8);
 
             JSONObject rootObject = new JSONObject(configContent);
 
@@ -91,8 +93,6 @@ public class CommandHandler
             }
 
             System.out.println(list.toString());
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -110,8 +110,8 @@ public class CommandHandler
             BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(
                     proc.getOutputStream()));
 
-            for(int i = 0; i < listApp.size(); ++i) {
-                String str = String.format("deployment enable %s\n", listApp.get(i));
+            for (String s : listApp) {
+                String str = String.format("deployment enable %s\n", s);
                 writer.write(str);
             }
             writer.flush();

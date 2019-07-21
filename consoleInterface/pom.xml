@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.practice</groupId>
-    <artifactId>clientD</artifactId>
+    <artifactId>consoleInterface</artifactId>
     <version>1.0-SNAPSHOT</version>
     <build>
         <plugins>
@@ -15,19 +15,6 @@
                 <configuration>
                     <source>7</source>
                     <target>7</target>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jar-plugin</artifactId>
-                <version>3.1.0</version>
-                <configuration>
-                    <archive>
-                        <manifest>
-                            <addClasspath>true</addClasspath>
-                            <mainClass>com.Main</mainClass>
-                        </manifest>
-                    </archive>
                 </configuration>
             </plugin>
             <plugin>
@@ -42,7 +29,7 @@
                   <configuration>
                     <archive>
                       <manifest>
-                        <mainClass>com.Main</mainClass>
+                        <mainClass>com.practice.Main</mainClass>
                       </manifest>
                     </archive>
                     <descriptorRefs>
@@ -57,19 +44,11 @@
     <distributionManagement>
         <repository>
             <uniqueVersion>false</uniqueVersion>
-            <id>clientD</id>
+            <id>corp1</id>
             <name>Corporate Repository</name>
             <url>file://deployDir</url>
             <layout>default</layout>
         </repository>
     </distributionManagement>
-    <dependencies>
-        <dependency>
-            <groupId>org.json</groupId>
-            <artifactId>json</artifactId>
-            <version>20180813</version>
-        </dependency>
-    </dependencies>
-
 
 </project>

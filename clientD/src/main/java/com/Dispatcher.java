@@ -12,7 +12,7 @@ public class Dispatcher
     public Dispatcher()
     {
         try {
-            File configFile = new File("src/main/java/com/config");
+            File configFile = new File("config");
             FileInputStream in = new FileInputStream(configFile);
             byte[] data = new byte[(int)configFile.length()];
 

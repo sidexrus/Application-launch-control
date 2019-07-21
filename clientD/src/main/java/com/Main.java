@@ -5,13 +5,16 @@ public class Main {
         System.out.println("Client d");
         Dispatcher dispatcher = new Dispatcher();
         NIOSocketServer server = new NIOSocketServer(dispatcher);
-        try
-        {
-            Thread.sleep( 60000 );
+        while(true){
+            try
+            {
+                Thread.sleep(600000  );
+            }
+            catch( Exception e )
+            {
+                e.printStackTrace();
+            }
         }
-        catch( Exception e )
-        {
-            e.printStackTrace();
-        }
+
     }
 }
