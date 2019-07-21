@@ -1,3 +1,5 @@
-language: java
-sudo: false
-script: mvn clean verify
+language: java 
+
+script: 
+- mvn -q -B -f clientD/pom.xml clean verify 
+- mvn -q -B -f consoleInterface/pom.xml clean verify
