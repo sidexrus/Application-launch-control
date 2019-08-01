@@ -4,22 +4,24 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.*;
+import java.nio.CharBuffer;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 public class CommandHandler
 {
     private String PATH_WILDFLY_BIN;
+    private Process cliProcess = null;
+    private BufferedWriter cliWriter = null;
+    private BufferedReader cliReader = null;
+
 
     public CommandHandler(String pathWildflyBin)
     {
         PATH_WILDFLY_BIN = pathWildflyBin;
     }
 
-    void processCommand(DataTransferPacket packet)
+    public void processCommand(DataTransferPacket packet)
     {
         if(packet.commandText.equals("startServer")){
             startServer(packet);
@@ -35,6 +37,10 @@ public class CommandHandler
             deployApplication(packet);
         } else if(packet.commandText.equals("undeployApp")){
             undeployApplication(packet);
+        } else if(packet.commandText.equals("deploySeq")){
+            deployApplicationSequence(packet);
+        } else if(packet.commandText.equals("undeploySeq")){
+            undeployApplicationSequence(packet);
         } else if(packet.commandText.equals("enableSeq")){
             enableSequence(packet);
         } else if(packet.commandText.equals("disableSeq")){
@@ -45,28 +51,34 @@ public class CommandHandler
 
     }
 
-    private void disableSequence(DataTransferPacket packet) {
-        List<String> listApp = readFile(packet.attributes.get(0));
-
+    private boolean connectToCLI(DataTransferPacket packet)
+    {
+        ProcessBuilder builder = new ProcessBuilder(PATH_WILDFLY_BIN + "jboss-cli.sh","--connect");
         try {
-            ProcessBuilder builder = new ProcessBuilder(PATH_WILDFLY_BIN + "jboss-cli.sh","--connect");
-            Process proc = builder.start();
+            cliProcess = builder.start();
+            cliReader = new BufferedReader(new InputStreamReader(cliProcess.getInputStream()));
 
-            BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(
-                    proc.getOutputStream()));
-
-            for (String s : listApp) {
-                String str = String.format("deployment disable %s\n", s);
-                writer.write(str);
+            CharBuffer buffer = CharBuffer.allocate(4096);
+            int readByte = cliReader.read(buffer);
+            while((readByte) > 0){
+                String str = buffer.toString().trim();
+                if(str.contains("Failed to connect to the controller")){
+                    packet.attributes = Collections.singletonList("Server is down");
+                    return false;
+                } else if(str.equals("")){
+                    break;
+                }
+                readByte = cliReader.read(buffer);
             }
-            writer.flush();
-            writer.close();
 
-            packet.typePacket = "response";
-
+            cliProcess = builder.start();
+            cliReader = new BufferedReader(new InputStreamReader(cliProcess.getInputStream()));
+            cliWriter = new BufferedWriter(new OutputStreamWriter(cliProcess.getOutputStream()));
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+        return true;
     }
 
     private List<String> readFile(String filePath)
@@ -100,22 +112,81 @@ public class CommandHandler
         return list;
     }
 
+    private void undeployApplicationSequence(DataTransferPacket packet)
+    {
+        List<String> listApp = readFile(packet.attributes.get(0));
+
+        if(cliProcess == null && !connectToCLI(packet)){
+            return;
+        }
+
+        try {
+            for(String s :listApp){
+                String appName = s.substring(s.lastIndexOf("/") + 1);
+                String str = String.format("undeploy %s\n", appName);
+                cliWriter.write(str);
+                cliWriter.flush();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void deployApplicationSequence(DataTransferPacket packet)
+    {
+        List<String> listApp = readFile(packet.attributes.get(0));
+
+        if(cliProcess == null && !connectToCLI(packet)){
+            return;
+        }
+
+        try {
+            for(String s :listApp){
+                String str = String.format("deploy %s --force\n", s);
+                cliWriter.write(str);
+                cliWriter.flush();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void disableSequence(DataTransferPacket packet) {
+        List<String> listApp = readFile(packet.attributes.get(0));
+
+        try {
+            if(cliProcess == null && !connectToCLI(packet)){
+                return;
+            }
+
+            for (String s : listApp) {
+                String appName = s.substring(s.lastIndexOf("/") + 1);
+                String str = String.format("deployment disable %s\n", appName);
+                cliWriter.write(str);
+            }
+            cliWriter.flush();
+
+            packet.typePacket = "response";
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     private void enableSequence(DataTransferPacket packet) {
         List<String> listApp = readFile(packet.attributes.get(0));
 
         try {
-            ProcessBuilder builder = new ProcessBuilder(PATH_WILDFLY_BIN + "jboss-cli.sh","--connect");
-            Process proc = builder.start();
-
-            BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(
-                    proc.getOutputStream()));
+            if(cliProcess == null && !connectToCLI(packet)){
+                return;
+            }
 
             for (String s : listApp) {
-                String str = String.format("deployment enable %s\n", s);
-                writer.write(str);
+                String appName = s.substring(s.lastIndexOf("/") + 1);
+                String str = String.format("deployment enable %s\n", appName);
+                cliWriter.write(str);
             }
-            writer.flush();
-            writer.close();
+            cliWriter.flush();
 
             packet.typePacket = "response";
 
@@ -126,26 +197,20 @@ public class CommandHandler
 
     private void undeployApplication(DataTransferPacket packet) {
         try {
-            ProcessBuilder builder = new ProcessBuilder(PATH_WILDFLY_BIN + "jboss-cli.sh","--connect");
-            Process proc = builder.start();
-
-            BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(
-                    proc.getOutputStream()));
-
-            BufferedReader input = new BufferedReader(new InputStreamReader(
-                    proc.getInputStream()));
+            if(cliProcess == null && !connectToCLI(packet)){
+                return;
+            }
 
             String str = String.format("undeploy %s\n", packet.attributes.get(0));
-            writer.write(str);
-            writer.flush();
-            writer.close();
+            cliWriter.write(str);
+            cliWriter.flush();
 
             packet.typePacket = "response";
 
             String line;
-            while((line = input.readLine()) != null){
-                System.out.println(line);
-            }
+            line = cliReader.readLine();
+
+            System.out.println(line);
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -154,26 +219,19 @@ public class CommandHandler
 
     private void deployApplication(DataTransferPacket packet) {
         try {
-            ProcessBuilder builder = new ProcessBuilder(PATH_WILDFLY_BIN + "jboss-cli.sh","--connect");
-            Process proc = builder.start();
+            if(cliProcess == null && !connectToCLI(packet)){
+                return;
+            }
 
-            BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(
-                    proc.getOutputStream()));
-
-            BufferedReader input = new BufferedReader(new InputStreamReader(
-                    proc.getInputStream()));
-
-            String str = String.format("deploy %s\n", packet.attributes.get(0));
-            writer.write(str);
-            writer.flush();
-            writer.close();
+            String str = String.format("deploy %s --force\n", packet.attributes.get(0));
+            cliWriter.write(str);
+            cliWriter.flush();
 
             packet.typePacket = "response";
 
-            String line;
-            while((line = input.readLine()) != null){
-                System.out.println(line);
-            }
+            cliReader.readLine();
+
+            packet.attributes = Collections.singletonList("Application was deployment");
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -182,16 +240,13 @@ public class CommandHandler
 
     private void disableApplication(DataTransferPacket packet) {
         try {
-            ProcessBuilder builder = new ProcessBuilder(PATH_WILDFLY_BIN + "jboss-cli.sh","--connect");
-            Process proc = builder.start();
-
-            BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(
-                    proc.getOutputStream()));
+            if(cliProcess == null && !connectToCLI(packet)){
+                return;
+            }
 
             String str = String.format("deployment disable %s\n", packet.attributes.get(0));
-            writer.write(str);
-            writer.flush();
-            writer.close();
+            cliWriter.write(str);
+            cliWriter.flush();
 
             packet.typePacket = "response";
 
@@ -202,16 +257,15 @@ public class CommandHandler
 
     private void enableApplication(DataTransferPacket packet) {
         try {
-            ProcessBuilder builder = new ProcessBuilder(PATH_WILDFLY_BIN + "jboss-cli.sh","--connect");
-            Process proc = builder.start();
-
-            BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(
-                    proc.getOutputStream()));
+            if(cliProcess == null && !connectToCLI(packet)){
+                return;
+            }
 
             String str = String.format("deployment enable %s\n", packet.attributes.get(0));
-            writer.write(str);
-            writer.flush();
-            writer.close();
+            cliWriter.write(str);
+            cliWriter.flush();
+
+            System.out.println(cliReader.readLine());
 
             packet.typePacket = "response";
 
@@ -227,15 +281,19 @@ public class CommandHandler
             BufferedReader input = new BufferedReader(new InputStreamReader(
                     proc.getInputStream()));
 
-            packet.typePacket = "response";
 
             String line;
             while((line = input.readLine()) != null){
                 if(line.contains("\"outcome\" => \"success\"")){
                     packet.attributes = Collections.singletonList("Server was shutdown");
                     break;
+                } else if(line.contains("Failed to connect to the controller")){
+                    packet.attributes = Collections.singletonList("Server is already shutdown");
                 }
             }
+
+
+            packet.typePacket = "response";
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -249,7 +307,6 @@ public class CommandHandler
             BufferedReader input = new BufferedReader(new InputStreamReader(
                     proc.getInputStream()));
 
-            packet.typePacket = "response";
 
             String line;
             while((line = input.readLine()) != null){
@@ -262,6 +319,7 @@ public class CommandHandler
                 }
             }
 
+            packet.typePacket = "response";
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -271,36 +329,38 @@ public class CommandHandler
     private void statusApplication(DataTransferPacket packet)
     {
         try {
-            ProcessBuilder builder = new ProcessBuilder(PATH_WILDFLY_BIN + "jboss-cli.sh","--connect");
-            Process proc = builder.start();
-
-            BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(
-                    proc.getOutputStream()));
-
-            BufferedReader input = new BufferedReader(new InputStreamReader(
-                    proc.getInputStream()));
+            if(cliProcess == null && !connectToCLI(packet)){
+                return;
+            }
 
             String line;
 
             packet.typePacket = "response";
 
-            writer.write("deploy -l\n");
-            writer.flush();
-            writer.close();
+            cliWriter.write("deploy -l");
+            cliWriter.newLine();
+            cliWriter.flush();
 
+            cliWriter.write("command");
+            cliWriter.newLine();
+            cliWriter.flush();
 
-            while((line = input.readLine()) != null){
+            while((line = cliReader.readLine()) != null && !line.contains("Command is missing.")){
+                System.out.println(line);
+                line = line.trim().replaceAll(" +", " ");
                 if(line.contains(packet.attributes.get(0))){
                     String[] arr = line.split(" ");
                     if(arr[2].contains("true")){
                         packet.attributes = Arrays.asList("Application: " + packet.attributes.get(0), "Status: " + "enabled");
-                    } else {
+                    } else if(arr[2].contains("false")) {
                         packet.attributes = Arrays.asList("Application: " + packet.attributes.get(0), "Status: " + "disabled");
                     }
+                    //break;
                 }
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
+
 }

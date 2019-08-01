@@ -8,6 +8,12 @@ public class DataTransferPacket
     public String commandText;
     public List<String> attributes;
 
+    public DataTransferPacket()
+    {
+        typePacket = "";
+        commandText = "";
+    }
+
     public DataTransferPacket(List<String> text)
     {
         typePacket = text.get(0);
