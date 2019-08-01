@@ -9,7 +9,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class TestCommandHandler {
 
-    private String PATH_WILDFLY_BIN = "/home/tester/Downloads/wildfly-17.0.0.Final/bin/";
+    private String PATH_WILDFLY_BIN = "wildfly-17.0.0.Final/bin/";
     String WAR_PLACE = "exampleWar/";
 
     @Test
