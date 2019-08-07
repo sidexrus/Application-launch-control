@@ -8,7 +8,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
 public class DispatcherSimpleImpl implements Dispatcher {
-    private CommandHandler commandHandler;
+    private DatabaseRequestHandler databaseRequestHandler;
 
     public DispatcherSimpleImpl()
     {
@@ -24,15 +24,11 @@ public class DispatcherSimpleImpl implements Dispatcher {
 
             JSONObject rootObject = new JSONObject(configContent);
 
-            String pathWildflyBin = rootObject.getString("PATH_WILDFLY_BIN");
             String dbServerAddress = rootObject.getString("DB_SERVER_ADDRESS");
-            int dbServerPort = rootObject.getInt("DB_SERVER_PORT");
+            String dbUser = rootObject.getString("DB_USER");
+            String dbUserPassword = rootObject.getString("DB_USER_PASSWORD");
+            databaseRequestHandler = new DatabaseRequestHandler(dbServerAddress, dbUser, dbUserPassword);
 
-            commandHandler = new CommandHandler(pathWildflyBin, dbServerAddress, dbServerPort);
-
-            System.out.println(pathWildflyBin);
-            System.out.println(dbServerAddress);
-            System.out.println(dbServerPort);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -40,6 +36,8 @@ public class DispatcherSimpleImpl implements Dispatcher {
 
     public void dispatchObject(DataTransferPacket packet)
     {
-        commandHandler.processCommand(packet);
+        if(packet.typePacket.equals("dbRequest")){
+            databaseRequestHandler.processRequest(packet);
+        }
     }
 }

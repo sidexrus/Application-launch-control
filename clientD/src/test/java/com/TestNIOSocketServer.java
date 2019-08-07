@@ -26,7 +26,7 @@ public class TestNIOSocketServer {
 
         String messageForSend = "[Hi]";
 
-        NIOSocketServer server = new NIOSocketServer(dispatcher);
+        NIOSocketServer server = new NIOSocketServer(5000, dispatcher);
         server.run();
 
         try {

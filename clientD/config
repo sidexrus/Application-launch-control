@@ -1,3 +1,5 @@
 {
-  "PATH_WILDFLY_BIN": "wildfly-17.0.0.Final/bin/"
+  "PATH_WILDFLY_BIN": "wildfly-17.0.0.Final/bin/",
+  "DB_SERVER_ADDRESS": "127.0.0.1",
+  "DB_SERVER_PORT": 5010
 }

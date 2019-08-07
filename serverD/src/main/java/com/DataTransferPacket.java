@@ -17,13 +17,11 @@ public class DataTransferPacket
     public DataTransferPacket(ArrayList<String> text)
     {
         typePacket = text.get(0);
-        if(typePacket.equals("command")){
+        if(typePacket.equals("command") || typePacket.equals("dbRequest")){
             commandText = text.get(1);
             attributes.addAll(text.subList(2, text.size()));
-//            attributes = text.subList(2, text.size());
         } else {
             attributes.addAll(text.subList(1, text.size()));
-//            attributes = text.subList(1, text.size());
         }
     }
 

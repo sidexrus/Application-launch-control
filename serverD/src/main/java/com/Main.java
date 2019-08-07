@@ -2,12 +2,12 @@ package com;
 
 public class Main {
     public static void main(String[] args) {
-        System.out.println("Client d");
+        System.out.println("Server d");
 
-        int port = 5000;
+        int port = 5010;
 
         if(args.length != 0){
-            port = Integer.valueOf(args[0]);
+            port = Integer.parseInt(args[0]);
         }
 
         Dispatcher dispatcher = new DispatcherSimpleImpl();
