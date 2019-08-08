@@ -40,10 +40,11 @@ public class Main {
             if(args[0].equals("forwardSeq")){
                 msg.add(args[0]);
                 msg.addAll(readSequenceFile(args[1]));
-            } else if(args[0].contains("Seq")){
+            } else if(args[0].contains("Seq") && args.length == 1){
                 msg.add(args[0]);
                 msg.add(pair.second);
             } else{
+                pair.second = args[1];
                 msg.addAll(Arrays.asList(args));
             }
 

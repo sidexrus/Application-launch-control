@@ -25,7 +25,7 @@ public class DatabaseRequestHandler {
 
     private void checkApplicationSequence(DataTransferPacket packet)
     {
-        ArrayList res = SequenceFinder.FindSequence(packet.attributes, connection);
+        ArrayList res = SequenceFinder.FindSequenceWithCycles(packet.attributes, connection);
 
         packet.attributes.clear();
         packet.attributes.addAll(res);
