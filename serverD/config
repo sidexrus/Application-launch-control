@@ -1,0 +1,5 @@
+{
+  "DB_SERVER_ADDRESS": "bolt://localhost:7687",
+  "DB_USER": "neo4j",
+  "DB_USER_PASSWORD": "tester"
+}
