@@ -160,6 +160,10 @@ public class CommandHandler
     {
         List<String> appList = readFile(packet.attributes.get(0));
 
+        if(appList.size() == 0){
+            return;
+        }
+
         ArrayList<String> message = new ArrayList<>();
         message.add("dbRequest");
         message.add("checkSeq");
@@ -211,7 +215,7 @@ public class CommandHandler
     {
         List<String> appList = readFile(packet.attributes.get(0));
 
-        if(cliProcess == null && !connectToCLI(packet)){
+        if(appList.size() == 0 || (cliProcess == null && !connectToCLI(packet))){
             return;
         }
 
@@ -235,7 +239,7 @@ public class CommandHandler
     {
         List<String> appList = readFile(packet.attributes.get(0));
 
-        if(cliProcess == null && !connectToCLI(packet)){
+        if(appList.size() == 0 || (cliProcess == null && !connectToCLI(packet))){
             return;
         }
 
@@ -281,7 +285,7 @@ public class CommandHandler
         List<String> appList = readFile(packet.attributes.get(0));
 
         try {
-            if(cliProcess == null && !connectToCLI(packet)){
+            if(appList.size() == 0 || (cliProcess == null && !connectToCLI(packet))){
                 return;
             }
 
@@ -323,7 +327,7 @@ public class CommandHandler
         List<String> appList = readFile(packet.attributes.get(0));
 
         try {
-            if(cliProcess == null && !connectToCLI(packet)){
+            if(appList.size() == 0 || (cliProcess == null && !connectToCLI(packet))){
                 return;
             }
 
