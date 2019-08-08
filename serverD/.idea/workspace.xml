@@ -2,14 +2,11 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="ac0070f9-db0c-4ad3-b77d-11f3e5ea6e3d" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/practice/AppListWorker.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/uiDesigner.xml" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/serverD.iml" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/practice/App.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/practice/App.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/practice/SequenceFinder.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/practice/SequenceFinder.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/target/classes/com/practice/App.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/practice/App.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/practice/SequenceFinder.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/practice/SequenceFinder.class" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -85,7 +82,9 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1564832720827</updated>
-      <workItem from="1564832726138" duration="494000" />
+      <workItem from="1564832726138" duration="1099000" />
+      <workItem from="1564834263731" duration="979000" />
+      <workItem from="1565237830885" duration="3453000" />
     </task>
     <servers />
   </component>
@@ -97,10 +96,23 @@
       <map>
         <entry key="MAIN">
           <value>
-            <State />
+            <State>
+              <option name="COLUMN_ORDER" />
+            </State>
           </value>
         </entry>
       </map>
     </option>
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/com/practice/App.java</url>
+          <line>17</line>
+          <option name="timeStamp" value="3" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
   </component>
 </project>
